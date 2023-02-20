@@ -13,9 +13,8 @@ class DisplayImageWidget extends StatelessWidget {
         body: Center(
           child:
             Image.asset(
-                'assets/images/vaccinRNA.png',
+                'assets/images/0-Star-Wars-memes.jpeg',
                 width: 350,
-                height: 350,
                 fit: BoxFit.cover,
                 ),
         ));
