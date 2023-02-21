@@ -5,42 +5,13 @@
 #include <string.h>
 #include <math.h>
 #include <errno.h>
+
+#include "MyProcess.h"  /* ->cette fois ci, la fonction est definie dans un autre fichier */
 /* parametres par defaut pour le lancement du fils */
 #define PGM_NAME 	"/home/debian/AMSE/bin/test-execve"
 #define DEFAULT_FREQ	3.0
 #define DEFAULT_AMP	2.0
-#define STR_LEN		4096
-/* declarations */
-pid_t	CreateProcess( char *, char **, char **);
-/* definitions */
-/*&&&&&&&&&&&&&&&&&&&&&&&*/
-/* creation de processus */
-/*&&&&&&&&&&&&&&&&&&&&&&&*/
-pid_t CreateProcess( char *szPgmName,		/* ->chemin d'acces complet au programme */
-					 char **tszArgv,		/* ->arguments passes au processus       */
-					 char **tszEnvp     )	/* ->variables d'environnement           */
-{
-	pid_t	IDSon;
-	/* verification des arguments */
-	if( ( szPgmName == NULL)||(tszArgv == NULL)||(tszEnvp == NULL) )
-	{
-		fprintf(stderr,"CreateProcess() : ERREUR --->pointeur(s) NULL passe(s) en argument\n");
-		return( (pid_t)(-1) );
-	};
-	if( (IDSon = fork()) == 0)
-	{
-		execve( szPgmName, tszArgv, tszEnvp);
-	};
-	/* alternative cote pere */
-	if( (int)(IDSon) < 0 )
-	{
-		fprintf(stderr,"CreateProcess() : ERREUR ---> appel a fork()\n");
-		fprintf(stderr,"code d'erreur = %d (%s)\n", errno, strerror(errno));
-		return( IDSon) ;
-	};
-	/*  OK */
-	return( IDSon );
-}
+#define STR_LEN		256
 /* lancement d'un fils avec fork() */
 int main(int argc, char *argv[], char *envp[])
 {
