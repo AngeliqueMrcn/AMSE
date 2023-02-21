@@ -15,9 +15,9 @@ class MyApp extends StatelessWidget {
 }
 
 class Exo {
-  final String title;
-  final String subtitle;
-  final WidgetBuilder buildFunc;
+  final String? title;
+  final String? subtitle;
+  final WidgetBuilder? buildFunc;
 
   const Exo({@required this.title, this.subtitle, @required this.buildFunc});
 }
