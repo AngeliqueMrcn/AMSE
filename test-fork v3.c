@@ -10,6 +10,37 @@
 #define DEFAULT_FREQ	3.0
 #define DEFAULT_AMP	2.0
 #define STR_LEN		256
+/* declarations */
+pid_t	CreateProcess( char *, char **, char **);
+/* definitions */
+/*&&&&&&&&&&&&&&&&&&&&&&&*/
+/* creation de processus */
+/*&&&&&&&&&&&&&&&&&&&&&&&*/
+pid_t CreateProcess( char *szPgmName,		/* ->chemin d'acces complet au programme */
+					 char **tszArgv,		/* ->arguments passes au processus       */
+					 char **tszEnvp     )	/* ->variables d'environnement           */
+{
+	pid_t	IDSon;
+	/* verification des arguments */
+	if( ( szPgmName == NULL)||(tszArgv == NULL)||(tszEnvp == NULL) )
+	{
+		fprintf(stderr,"CreateProcess() : ERREUR --->pointeur(s) NULL passe(s) en argument\n");
+		return( (pid_t)(-1) );
+	};
+	if( (IDSon = fork()) == 0)
+	{
+		execve( szPgmName, tszArgv, tszEnvp);
+	};
+	/* alternative cote pere */
+	if( (int)(IDSon) < 0 )
+	{
+		fprintf(stderr,"CreateProcess() : ERREUR ---> appel a fork()\n");
+		fprintf(stderr,"code d'erreur = %d (%s)\n", errno, strerror(errno));
+		return( IDSon) ;
+	};
+	/*  OK */
+	return( IDSon );
+}
 /* lancement d'un fils avec fork() */
 int main(int argc, char *argv[], char *envp[])
 {
@@ -45,21 +76,16 @@ int main(int argc, char *argv[], char *envp[])
 	sprintf(tszArgv[2],"%lf", f);
 
 	tszEnvp[i] = NULL;
-	/* creation du fils avec fork() ! */
-	if( (IDSon = fork()) == 0 )
+	/* creation du fils avec CreateProcess()  */
+	IDSon = CreateProcess( PGM_NAME, tszArgv, tszEnvp);
+	if( (int)(IDSon) >= 0)
 	{
-		execve(PGM_NAME, tszArgv, tszEnvp );
+		printf("processus fils lance avec succes...\n");
 	}
 	else
-	{	
-		if( IDSon < 0 )
-		{
-			fprintf(stderr,"%s.main() : ERREUR --> appel a fork().\n", argv[0] );
-			fprintf(stderr,"code d'erreur = %d (%s)\n", errno, (char *)(strerror(errno)));
-			return( -errno );
-		};
+	{
+		printf("echec de l'appel a CreateProcess()...\n");
 	};
-	printf("processus fils lance avec succes...\n");
 	return( 0 );
 }
 
