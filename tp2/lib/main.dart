@@ -37,6 +37,11 @@ List exos = [
       title: 'Exercice 4',
       subtitle: 'Affichage dune tuile',
       buildFunc: (context) => exo4.DisplayImageWidget()),
+  /*Exo(
+      title: 'Exercice 5',
+      subtitle: 'Génération du plateau de tuiles',
+      buildFunc: (context) => exo5.PositionedTiles()),
+      */
   Exo(
       title: 'Exercice 6',
       subtitle: 'Animation dune tuile',
