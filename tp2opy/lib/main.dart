@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
-class TileData {
-  final int x;
-  final int y;
-
-  TileData(this.x, this.y);
-}
-
 class MyApp extends StatefulWidget {
   @override
   TuileApp createState() => TuileApp();
@@ -18,7 +11,7 @@ class TuileApp extends State<MyApp> {
   late int columns;
   late double tileSize;
   final int rows = 6;
-  final String imagePath = 'assets/images/pic2.jpg';
+  final String imagePath = 'assets/images/vaccinRNA.png';
 
   @override
   void initState() {
