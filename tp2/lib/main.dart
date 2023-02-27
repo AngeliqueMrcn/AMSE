@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'exo1.dart' as exo1;
 import 'exo2.dart' as exo2;
 import 'exo4.dart' as exo4;
-import 'exo5.dart' as exo5;
+import 'exo5a.dart' as exo5a;
+import 'exo5b.dart' as exo5b;
 import 'exo6.dart' as exo6;
 
 void main() => runApp(MyApp());
@@ -37,11 +38,14 @@ List exos = [
       title: 'Exercice 4',
       subtitle: 'Affichage dune tuile',
       buildFunc: (context) => exo4.DisplayImageWidget()),
-  /*Exo(
-      title: 'Exercice 5',
+  Exo(
+      title: 'Exercice 5a',
       subtitle: 'Génération du plateau de tuiles',
-      buildFunc: (context) => exo5.PositionedTiles()),
-      */
+      buildFunc: (context) => exo5a.PositionedTiles()),
+  Exo(
+      title: 'Exercice 5b',
+      subtitle: 'Génération du plateau de tuiles avec image',
+      buildFunc: (context) => exo5b.PositionedTiles()),
   Exo(
       title: 'Exercice 6',
       subtitle: 'Animation dune tuile',

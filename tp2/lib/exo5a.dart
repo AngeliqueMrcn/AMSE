@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-void main() => runApp(MyApp());
+math.Random random = new math.Random();
 
-class MyApp extends StatelessWidget {
+class PositionedTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
             24,
             (index) {
               return Container(
-                color: Colors.blueGrey[index % 8 * 100],
+                color: Color.fromARGB( 255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
               );
             },
           ),
