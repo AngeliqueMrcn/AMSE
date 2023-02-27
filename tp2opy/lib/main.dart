@@ -64,7 +64,6 @@ class DisplayImageWidget extends StatelessWidget {
 }
 
 
-
 /*
 EXO 6 animation tuile
 import 'package:flutter/material.dart';

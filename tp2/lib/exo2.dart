@@ -85,7 +85,7 @@ class _ImageTransformState extends State<ImageTransform> {
               value: _isMirrored,
               onChanged: (value) {
                 setState(() {
-                  _isMirrored = true;
+                  _isMirrored = ! _isMirrored;
                 });
               },
             ),

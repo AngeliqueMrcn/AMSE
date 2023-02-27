@@ -34,9 +34,13 @@ List exos = [
       subtitle: 'Transformer une image',
       buildFunc: (context) => exo2.DisplayImageWidget()),
   Exo(
+      title: 'Exercice 4',
+      subtitle: 'Affichage dune tuile',
+      buildFunc: (context) => exo4.DisplayImageWidget()),
+  Exo(
       title: 'Exercice 6',
       subtitle: 'Animation dune tuile',
-      buildFunc: (context) => exo6.DisplayImageWidget()),
+      buildFunc: (context) => exo6.PositionedTiles()),
 ];
 
 class MenuPage extends StatelessWidget {
