@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 // import 'util.dart';
 import 'exo1.dart' as exo1;
 import 'exo2.dart' as exo2;
-
+import 'exo3.dart' as exo3;
+import 'exo4.dart' as exo4;
+import 'exo5.dart' as exo5;
+import 'exo6.dart' as exo6;
 
 void main() => runApp(MyApp());
 
@@ -25,12 +28,13 @@ class Exo {
 List exos = [
   Exo(
       title: 'Exercice 1',
-      subtitle: 'Simple image',
+      subtitle: 'Afficher une image',
       buildFunc: (context) => exo1.DisplayImageWidget()),
   Exo(
       title: 'Exercice 2',
-      subtitle: 'Rotate&Scale image',
+      subtitle: 'Transformer une image',
       buildFunc: (context) => exo2.DisplayImageWidget()),
+
 ];
 
 class MenuPage extends StatelessWidget {
