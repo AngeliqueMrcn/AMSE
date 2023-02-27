@@ -9,7 +9,6 @@ class DisplayImageWidget extends StatelessWidget {
         appBar: AppBar(
           title: Text('Display image'),
         ),
-        // body: Center(child: Image.network("https://picsum.photos/1024")));
         body: Center(
           child:
             Image.asset(

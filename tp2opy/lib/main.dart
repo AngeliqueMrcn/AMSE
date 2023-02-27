@@ -1,14 +1,13 @@
 
-/*
-EXO 4 affichage tuile
+void main() => runApp(DisplayImageWidget());
 
 import 'package:flutter/material.dart';
 
 class Tile {
-  String imageURL;
-  Alignment alignment;
+  String? image;
+  Alignment? alignment;
 
-  Tile({this.imageURL, this.alignment});
+  Tile({this.image, this.alignment});
 
   Widget croppedImageTile() {
     return FittedBox(
@@ -19,7 +18,7 @@ class Tile {
             alignment: this.alignment,
             widthFactor: 0.3,
             heightFactor: 0.3,
-            child: Image.network(this.imageURL),
+            child: Image.network(this.image),
           ),
         ),
       ),
@@ -28,9 +27,9 @@ class Tile {
 }
 
 Tile tile = new Tile(
-    imageURL: 'https://picsum.photos/512', alignment: Alignment(0, 0));
+    image: '/home/angelique_mrcn/Documents/AMSE/tp2opy/assets/images/pic2.jpg', alignment: Alignment(0, 0));
 
-class DisplayTileWidget extends StatelessWidget {
+class DisplayImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +62,9 @@ class DisplayTileWidget extends StatelessWidget {
     );
   }
 }
-*/
+
+
+
 /*
 EXO 6 animation tuile
 import 'package:flutter/material.dart';
@@ -141,117 +142,15 @@ class PositionedTilesState extends State<PositionedTiles> {
 */
 
 
-//EXO 2 : transform image
-import 'package:flutter/material.dart';
-
-void main() => runApp(MyApp());
-
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('TP2'),
-        ),
-        body: Center(
-          child: ImageTransform(),
-        ),
-      ),
-    );
-  }
-}
-
-class ImageTransform extends StatefulWidget {
-  @override
-  _ImageTransformState createState() => _ImageTransformState();
-}
-
-class _ImageTransformState extends State<ImageTransform> {
-  double _scale = 1.0;
-  double _rotation = 0.0;
-  bool _isMirrored = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..scale(_scale)
-            ..rotateZ(_rotation)
-            ..scale(_isMirrored ? -1.0 : 1.0, 1.0),
-          child: Image.asset(
-            'assets/images/pic2.jpg',
-            width: 200.0,
-            height: 200.0,
-            fit: BoxFit.cover,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Scale: '),
-            Slider(
-              value: _scale,
-              min: 0.1,
-              max: 2.0,
-              onChanged: (value) {
-                setState(() {
-                  _scale = value;
-                });
-              },
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Rotation: '),
-            Slider(
-              value: _rotation,
-              min: 0.0,
-              max: 2 * 3.14159,
-              onChanged: (value) {
-                setState(() {
-                  _rotation = value;
-                });
-              },
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Mirrored: '),
-            Checkbox(
-              value: _isMirrored,
-              onChanged: (value) {
-                setState(() {
-                  _isMirrored = true;
-                });
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 
 
 
 /*
 class Tile {
-  String? imageURL;
+  String? image;
   Alignment? alignment;
 
-  Tile({this.imageURL, this.alignment});
+  Tile({this.image, this.alignment});
 
   Widget croppedImageTile() {
     return FittedBox(
@@ -262,7 +161,7 @@ class Tile {
             alignment: this.alignment,
             widthFactor: 0.3,
             heightFactor: 0.3,
-            child: Image.network(this.imageURL),
+            child: Image.network(this.image),
           ),
         ),
       ),
@@ -271,7 +170,7 @@ class Tile {
 }
 
 Tile tile = new Tile(
-    imageURL: '/home/angelique_mrcn/Documents/AMSE/tp2opy/assets/images/pic2.jpg', alignment: Alignment(0, 0));
+    image: '/home/angelique_mrcn/Documents/AMSE/tp2opy/assets/images/pic2.jpg', alignment: Alignment(0, 0));
 
 class DisplayTileWidget extends StatelessWidget {
   @override
