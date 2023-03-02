@@ -1,4 +1,42 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
+
+math.Random random = new math.Random();
+
+void main() => runApp(PositionedTiles());
+
+class PositionedTiles extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Plateau de tuiles',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Plateau de tuiles'),
+        ),
+        body: GridView.count(
+          crossAxisCount: 3,
+          crossAxisSpacing : 20,
+          mainAxisSpacing : 20,
+          children: List.generate(
+            9,
+            (index) {
+              return Container(
+                color: Color.fromARGB( 255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+/*
+
+import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +49,7 @@ class TuileApp extends State<MyApp> {
   late int columns;
   late double tileSize;
   final int rows = 6;
-  final String imagePath = 'assets/images/vaccinRNA.png';
+  final String imagePath = 'assets/images/0-Star-Wars-memes.jpeg';
 
   @override
   void initState() {
@@ -89,3 +127,4 @@ class TuileApp extends State<MyApp> {
     );
   }
 }
+*/

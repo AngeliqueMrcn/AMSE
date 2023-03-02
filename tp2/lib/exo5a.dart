@@ -13,9 +13,9 @@ class PositionedTiles extends StatelessWidget {
           title: Text('Plateau de tuiles'),
         ),
         body: GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           children: List.generate(
-            24,
+            9,
             (index) {
               return Container(
                 color: Color.fromARGB( 255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
