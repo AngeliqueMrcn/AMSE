@@ -14,6 +14,9 @@ class PositionedTiles extends StatelessWidget {
         ),
         body: GridView.count(
           crossAxisCount: 3,
+          padding: const EdgeInsets.all(20),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
           children: List.generate(
             9,
             (index) {
