@@ -23,7 +23,8 @@ class ImageTransform extends StatefulWidget {
 
 class _ImageTransformState extends State<ImageTransform> {
   double _scale = 1.0;
-  double _rotation = 0.0;
+  double _rotationZ = 0.0;
+  double _rotationX =1.0;
   bool _isMirrored = false;
 
   @override
@@ -35,7 +36,8 @@ class _ImageTransformState extends State<ImageTransform> {
           alignment: Alignment.center,
           transform: Matrix4.identity()
             ..scale(_scale)
-            ..rotateZ(_rotation)
+            ..rotateZ(_rotationZ)
+            ..rotateX(_rotationX)
             ..scale(_isMirrored ? -1.0 : 1.0, 1.0),
           child: Image.asset(
             'assets/images/pic2.jpg',
@@ -64,14 +66,30 @@ class _ImageTransformState extends State<ImageTransform> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Rotation: '),
+            Text('Rotation Z: '),
             Slider(
-              value: _rotation,
+              value: _rotationX,
               min: 0.0,
               max: 2 * 3.14159,
               onChanged: (value) {
                 setState(() {
-                  _rotation = value;
+                  _rotationX = value;
+                });
+              },
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Rotation X: '),
+            Slider(
+              value: _rotationZ,
+              min: 0.0,
+              max: 2 * 3.14159,
+              onChanged: (value) {
+                setState(() {
+                  _rotationZ = value;
                 });
               },
             ),
