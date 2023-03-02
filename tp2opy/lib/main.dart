@@ -5,9 +5,7 @@ math.Random random = new math.Random();
 
 void main() => runApp(PositionedTiles());
 
-class createTapableCroppedImageTiles () {
-  
-}
+class createTapableCroppedImageTiles () {}
 class PositionedTiles extends StatelessWidget {
   @override
   SizedBox(
