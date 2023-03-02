@@ -5,8 +5,23 @@ math.Random random = new math.Random();
 
 void main() => runApp(PositionedTiles());
 
+class createTapableCroppedImageTiles () {
+  
+}
 class PositionedTiles extends StatelessWidget {
   @override
+  SizedBox(
+    width: size,
+    height: size,
+    child: Container(
+        margin: EdgeInsets.all(20.0),
+        child: GridView.count(
+            primary: false,
+            padding: const EdgeInsets.all(1),
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1,
+            crossAxisCount: _numberOfTilesOnWidth,
+            children: this.createTapableCroppedImageTiles())))
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Plateau de tuiles',
@@ -15,9 +30,10 @@ class PositionedTiles extends StatelessWidget {
           title: Text('Plateau de tuiles'),
         ),
         body: GridView.count(
+          padding: const EdgeInsets.all(40),
           crossAxisCount: 3,
-          crossAxisSpacing : 20,
-          mainAxisSpacing : 20,
+          crossAxisSpacing : 10,
+          mainAxisSpacing : 10,
           children: List.generate(
             9,
             (index) {
