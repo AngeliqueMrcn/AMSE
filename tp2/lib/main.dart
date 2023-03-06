@@ -51,7 +51,7 @@ List exos = [
   Exo(
       title: 'Exercice 5b',
       subtitle: 'Génération du plateau de tuiles avec image',
-      buildFunc: (context) => exo5b.PositionedTiles()),
+      buildFunc: (context) => exo5b.GenerateTile()),
      
   Exo(
       title: 'Exercice 6',
