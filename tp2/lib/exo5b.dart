@@ -1,35 +1,39 @@
 import 'package:flutter/material.dart';
+// import 'package:Taquin/util.dart';
 import 'dart:math';
 
-class DisplayImageWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Generation de Tile'),
-        ),
-        body: Center(
-          child: GenerateTile(),
-        ));
-  }
-}
-
-class _ImageTile {
-  String tileName;
+class Tile {
+  String imageURL;
   Alignment alignment;
 
-  _ImageTile({this.tileName = 'assets/images/0-Star-Wars-memes.jpeg', required this.alignment});
+  Tile({this.imageURL='assets/images/pic2.jpg', this.alignment=Alignment.center});
 
-  Widget croppedImageTile(int taille) {
+  Widget croppedImageTile() {
     return FittedBox(
       fit: BoxFit.fill,
       child: ClipRect(
         child: Container(
           child: Align(
             alignment: this.alignment,
-            widthFactor: 1 / taille,
-            heightFactor: 1 / taille,
-            child: Image.asset(this.tileName),
+            widthFactor: 0.3,
+            heightFactor: 0.3,
+            child: Image.network(this.imageURL),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget CutImage(double x, double y, double cases) {
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: ClipRect(
+        child: Container(
+          child: Align(
+            alignment: Alignment(x, y),
+            widthFactor: cases,
+            heightFactor: cases,
+            child: Image.network(this.imageURL),
           ),
         ),
       ),
@@ -37,63 +41,86 @@ class _ImageTile {
   }
 }
 
-List<Widget> generateCroppedTileList(int taille) {
-  List<Widget> l = [];
+class PositionedTiles extends StatefulWidget {
+  const PositionedTiles({key});
 
-  for (var y = 1; y < taille + 1; y++) {
-    for (var x = 1; x < taille + 1; x++) {
-      double Align_x = (((x - 1) * (2)) / (taille - 1)) - 1;
-      double Align_y = (((y - 1) * (2)) / (taille - 1)) - 1;
-
-      l.add(Padding(
-          padding: EdgeInsets.all(0.4),
-          child: _ImageTile(alignment: Alignment(Align_x, Align_y))
-              .croppedImageTile(taille)));
-    }
-  }
-
-  return l;
-}
-
-class GenerateTile extends StatefulWidget {
   @override
-  _GenerateTile createState() => _GenerateTile();
+  State<PositionedTiles> createState() => SliderState();
 }
 
-class _GenerateTile extends State<GenerateTile> {
-  double taille = 3.0;
+Tile tile = new Tile(
+    imageURL: 'assets/images/pic2.jpg',
+    alignment: Alignment(0, 0));
+
+class SliderState extends State<PositionedTiles> {
+  double _sliderValue = 4;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    List<Widget> containers = [];
+
+    for (int i = 0; i < _sliderValue; i++) {
+      for (int j = 0; j < _sliderValue; j++) {
+        double x = -1 + i * (2 / (_sliderValue - 1));
+        double y = -1 + j * (2 / (_sliderValue - 1));
+        containers.add(Container(
+          color: Colors.red,
+          child: SizedBox(
+              width: 100,
+              height: 100,
+              child: Container(
+                  child: this
+                      .createTileWidgetFrom(tile, y, x, (1 / _sliderValue)))),
+        ));
+      }
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('GridViewTest'),
+      ),
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          /*Container(
-            child:*/
-          Align(
-            alignment: Alignment.center,
-            widthFactor: 1,
-            heightFactor: 1,
+          SizedBox(
+            width: 400,
+            height: 400,
             child: GridView.count(
-                primary: false,
-                padding: const EdgeInsets.all(10),
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-                shrinkWrap: true,
-                crossAxisCount: taille.toInt(),
-                children: generateCroppedTileList(taille.toInt())),
+                /*primary: false,*/
+                padding: const EdgeInsets.all(20),
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+                crossAxisCount: _sliderValue.toInt(),
+                children: containers),
           ),
-          Slider(
-              value: taille,
-              min: 2.0,
-              max: 8.0,
-              divisions: 6,
-              label: taille.round().toString(),
-              onChanged: (double t) {
-                setState(() {
-                  taille = t;
-                });
-              })
-        ]);
+          Row(children: <Widget>[
+            Text("Size : "),
+            Expanded(
+              child: Slider(
+                value: _sliderValue,
+                min: 2,
+                max: 10,
+                divisions: 8,
+                label: _sliderValue.round().toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    _sliderValue = value;
+                  });
+                },
+              ),
+            )
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget createTileWidgetFrom(Tile tile, double x, double y, double cases) {
+    return InkWell(
+      child: tile.CutImage(x, y, cases),
+      onTap: () {
+        print("You tapped on a tile");
+      },
+    );
   }
 }
