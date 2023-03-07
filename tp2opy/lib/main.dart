@@ -1,144 +1,111 @@
-import 'package:flutter/material.dart';
-import 'dart:math' as math;
-
-math.Random random = new math.Random();
-
-void main() => runApp(PositionedTiles());
-
-class createTapableCroppedImageTiles () {}
-class PositionedTiles extends StatelessWidget {
-  @override
-  SizedBox(
-    width: size,
-    height: size,
-    child: Container(
-        margin: EdgeInsets.all(20.0),
-        child: GridView.count(
-            primary: false,
-            padding: const EdgeInsets.all(1),
-            crossAxisSpacing: 1,
-            mainAxisSpacing: 1,
-            crossAxisCount: _numberOfTilesOnWidth,
-            children: this.createTapableCroppedImageTiles())))
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Plateau de tuiles',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Plateau de tuiles'),
-        ),
-        body: GridView.count(
-          padding: const EdgeInsets.all(40),
-          crossAxisCount: 3,
-          crossAxisSpacing : 10,
-          mainAxisSpacing : 10,
-          children: List.generate(
-            9,
-            (index) {
-              return Container(
-                color: Color.fromARGB( 255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-/*
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
-  @override
-  TuileApp createState() => TuileApp();
-}
-
-class TuileApp extends State<MyApp> {
-  late int columns;
-  late double tileSize;
-  final int rows = 6;
-  final String imagePath = 'assets/images/0-Star-Wars-memes.jpeg';
-
-  @override
-  void initState() {
-    super.initState();
-    columns = 4;
-    tileSize = 0.0;
-  }
-
-  void _setColumns(int value) {
-    setState(() {
-      columns = value;
-      tileSize = 0.0;
-    });
-  }
-
-  void _onLayoutDone(Size size) {
-    setState(() {
-      tileSize = size.width / columns;
-    });
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Plateau de tuiles',
+      title: 'Puzzle Game Demo',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Plateau de tuiles'),
+          title: Text('Puzzle Game Demo'),
         ),
-        body: Column(
-          children: [
-            SizedBox(
-              height: 50.0,
-              child: Slider(
-                min: 1,
-                max: 10,
-                value: columns.toDouble(),
-                onChanged: (value) => _setColumns(value.toInt()),
-              ),
-            ),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  if (tileSize == 0.0) {
-                    return SizedBox.shrink();
-                  }
-                  return GridView.count(
-                    crossAxisCount: columns,
-                    children: List.generate(
-                      columns * rows,
-                      (index) {
-                        return ClipRect(
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Image.asset(
-                              imagePath,
-                              width: tileSize,
-                              height: tileSize,
-                              alignment: Alignment(
-                                -((index % columns) * tileSize) / tileSize,
-                                -((index ~/ columns) * tileSize) / tileSize,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+        body: PuzzleGame(),
       ),
     );
   }
 }
-*/
+
+class PuzzleGame extends StatefulWidget {
+  @override
+  _PuzzleGameState createState() => _PuzzleGameState();
+}
+
+class _PuzzleGameState extends State<PuzzleGame> {
+  final int _rowCount = 3;
+  final int _columnCount = 3;
+
+  List<Widget> _tiles = [];
+  int? _emptyTileIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _tiles = _createTiles();
+    _shuffleTiles();
+  }
+
+  List<Widget> _createTiles() {
+    List<Widget> tiles = [];
+    for (int i = 0; i < _rowCount * _columnCount - 1; i++) {
+      tiles.add(_Tile(index: i));
+    }
+    tiles.add(Container()); // Empty tile
+    return tiles;
+  }
+
+  void _shuffleTiles() {
+    int n = _tiles.length;
+    Random random = Random();
+    for (int i = n - 1; i > 0; i--) {
+      int j = random.nextInt(i + 1);
+      if (i == _tiles.length - 1) {
+        _emptyTileIndex = j;
+      } else if (j == _tiles.length - 1) {
+        _emptyTileIndex = i;
+      }
+      Widget temp = _tiles[i];
+      _tiles[i] = _tiles[j];
+      _tiles[j] = temp;
+    }
+  }
+
+  void _swapTiles(int index) {
+    if (_canMoveTile(index)) {
+      setState(() {
+        Widget temp = _tiles[index];
+        _tiles[index] = _tiles[_emptyTileIndex!];
+        _tiles[_emptyTileIndex!] = temp;
+        _emptyTileIndex = index;
+      });
+    }
+  }
+
+  bool _canMoveTile(int index) {
+    int emptyRow = _emptyTileIndex! ~/ _columnCount;
+    int emptyColumn = _emptyTileIndex! % _columnCount;
+    int row = index ~/ _columnCount;
+    int column = index % _columnCount;
+    return (emptyRow == row && (emptyColumn - column).abs() == 1) ||
+        (emptyColumn == column && (emptyRow - row).abs() == 1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: _columnCount,
+      children: List.generate(_tiles.length, (index) {
+        return GestureDetector(
+          onTap: () => _swapTiles(index),
+          child: _tiles[index],
+        );
+      }),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  final int index;
+
+  _Tile({required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/0-Star-Wars-memes.jpeg',
+    );
+  }
+}
