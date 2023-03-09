@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//On veut afficher une tuile appartenant a une image 
+
 class Tile {
   String imageURL;
   Alignment alignment;
@@ -23,6 +25,9 @@ class Tile {
   }
 }
 
+//On doit mettre l'URL dans cette version, sinon marche pas
+// Alignment(0,0) la meme que Alignment.center
+
 Tile tile = new Tile(
     imageURL: 'assets/images/pic2.jpg', alignment: Alignment(0, 0));
 
@@ -31,7 +36,7 @@ class DisplayImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Display a Tile as a Cropped Image'),
+        title: Text("Affichage d'un morceau d'image"),
         centerTitle: true,
       ),
       body: Center(
@@ -54,7 +59,7 @@ class DisplayImageWidget extends StatelessWidget {
     return InkWell(
       child: tile.croppedImageTile(),
       onTap: () {
-        print("tapped on tile");
+        print("Tu as appuyé sur une touche");
       },
     );
   }

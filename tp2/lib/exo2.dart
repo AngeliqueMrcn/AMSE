@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+//On veut pouvoir effectuer des modifications sur une image
+
+
 class DisplayImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

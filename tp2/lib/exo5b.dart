@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 // import 'package:Taquin/util.dart';
 import 'dart:math';
 
+//On génère un plateau de tuiles a partir d'une image
+// On peut régler le nombre de tuiles (carrées)
+
 class Tile {
   String imageURL;
   Alignment alignment;
@@ -52,6 +55,8 @@ Tile tile = new Tile(
     imageURL: 'assets/images/pic2.jpg',
     alignment: Alignment(0, 0));
 
+// A quelle taille on commence
+
 class SliderState extends State<PositionedTiles> {
   double _sliderValue = 4;
 
@@ -77,7 +82,7 @@ class SliderState extends State<PositionedTiles> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('GridViewTest'),
+        title: Text('TestGridView'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +99,7 @@ class SliderState extends State<PositionedTiles> {
                 children: containers),
           ),
           Row(children: <Widget>[
-            Text("Size : "),
+            Text("Taille : "),
             Expanded(
               child: Slider(
                 value: _sliderValue,
@@ -119,7 +124,7 @@ class SliderState extends State<PositionedTiles> {
     return InkWell(
       child: tile.CutImage(x, y, cases),
       onTap: () {
-        print("You tapped on a tile");
+        print("Tu as appuyé sur une touche");
       },
     );
   }

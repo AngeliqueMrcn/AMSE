@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+//On génère un plateau de tuiles avec GridView
+
 math.Random random = new math.Random();
 
 class PositionedTiles extends StatelessWidget {
