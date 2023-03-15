@@ -134,8 +134,8 @@ int main( int argc, char *argv[])
     double  f;                              /* ->coefficient de frottement                      */
     double  j;                              /* ->inertie totale au rotor                        */
     double  Te;                             /* ->periode d'echantillonnage                      */
-    struct sigaction    sa;                 /* ->gestion du signal handler                      */
-    struct sigaction    sa_old;             /* ->gestion du signal handler                      */
+    struct sigaction    sa ;                 /* ->gestion du signal handler                      */
+    struct sigaction    sa_old ;             /* ->gestion du signal handler                      */
     sigset_t            mask;               /* ->liste des signaux a masquer                    */
     struct itimerval    sTime;              /* ->periode du timer                               */
     /*.......*/
