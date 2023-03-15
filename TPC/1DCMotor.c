@@ -43,7 +43,7 @@ void initModel( double, double, double, double, double, double, double);
                             /* ->initialisation des coeffs. du     */
                             /*   modele d'etat.                    */
 void updateState(void);     /* ->mise a jour de l'etat du moteur   */
-void SignalHandler(int);    /* ->gestionnaire de signal           */
+void SignalHandler(int);    /* ->gestionnaire de signale           */
 
 
 
@@ -146,9 +146,9 @@ int main( int argc, char *argv[])
         usage(argv[0]);
         return( 0 );
     };
-    
-    
-    
+
+
+
     if( sscanf(argv[1],"%lf",&r) == 0 )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre reel\n", argv[0]);

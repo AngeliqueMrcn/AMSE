@@ -1,9 +1,4 @@
-/*===================================*/
-/* utilitaire pour reinitialiser     */
-/* l'etat d'un moteur a 0            */
-/* ----------------------------------*/
-/* J.BOONAERT AMSE 2021-2022         */
-/*===================================*/
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,13 +19,7 @@
 /*--------------*/
 /* declarations */
 /*--------------*/
-void usage( char *);        /* ->aide de ce programme              */
-/*-------------*/
-/* definitions */
-/*-------------*/
-/*&&&&&&&&&&&&&&&&&&&&&&*/
-/* aide de ce programme */
-/*&&&&&&&&&&&&&&&&&&&&&&*/
+void usage( char *);  
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)
@@ -40,26 +29,23 @@ void usage( char *szPgmName)
     printf("%s <drive>\n", szPgmName);
     printf("   avec <drive> = L | R \n");
 }
-/*######*/
+
 /* MAIN */
-/*######*/
+
 int main( int argc, char *argv[])
 {
     char    cDriveID;                       /* ->caractere pour identifier le moteur            */
     char    szStateAreaName[STR_LEN];       /* ->nom de la zone contenant la commande           */
     int     iFdState;                       /* ->descripteur pour la zone de commande           */
     double  *lpdb_state;                    /* ->pointeur sur la zone partagee                  */
-    /*.......*/
-    /* check */
-    /*.......*/
     if( argc != NB_ARGS)
     {
         usage(argv[0]);
         return( 0 );
     };
-    /*............................*/
+
     /* recuperation des arguments */
-    /*............................*/
+
     if( sscanf(argv[1],"%c",&cDriveID) == 0 )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre un caractere\n", argv[0]);
@@ -93,9 +79,9 @@ int main( int argc, char *argv[])
         fprintf(stderr,"             code = %d (%s)\n", errno, (char *)(strerror(errno)));
         exit( -errno );
     };
-    /*************************/
+
     /* fonctionnement normal */
-    /*************************/
+
     memset(lpdb_state,0, 2 * sizeof(double));
     return( 0 );   
 }

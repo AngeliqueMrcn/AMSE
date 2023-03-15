@@ -10,72 +10,54 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-
+/*............*/
 /* constantes */
-
-#define CMD_BASENAME    "COMMAND_"
-#define NB_ARGS         3               /* ->nombre d'arguments a passer en ligne de commande                            */
+/*............*/
+#define STATE_BASENAME    "STATE_"
+#define NB_ARGS         2               /* ->nombre d'arguments a passer en ligne de commande                            */
 #define STR_LEN         64              /* ->taille des chaines par defaut                                               */
-/*----------*/
-/* globales */
-/*----------*/
-double *lpdb_u;         /* ->pointeur sur la commande          */
 /*--------------*/
 /* declarations */
 /*--------------*/
-void usage( char *);        /* ->aide de ce programme              */
-/*-------------*/
-/* definitions */
-/*-------------*/
-
+void usage( char *);
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)
     {
         exit( -1 );
     };
-    printf("%s <commande> <drive>\n", szPgmName);
+    printf("%s <drive>\n", szPgmName);
     printf("   avec <drive> = L | R \n");
 }
-/*######*/
+
 /* MAIN */
-/*######*/
+
 int main( int argc, char *argv[])
 {
     char    cDriveID;                       /* ->caractere pour identifier le moteur            */
-    char    szCmdAreaName[STR_LEN];         /* ->nom de la zone contenant la commande           */
-    int     iFdCmd;                         /* ->descripteur pour la zone de commande           */
-    double  *lpdb_u;                        /* ->pointeur sur la zone partagee                  */
-    double  u;                              /* ->valeur a appliquer a la commande               */
-    /*.......*/
-    /* check */
-    /*.......*/
+    char    szStateAreaName[STR_LEN];       /* ->nom de la zone contenant la commande           */
+    int     iFdState;                       /* ->descripteur pour la zone de commande           */
+    double  *lpdb_state;                    /* ->pointeur sur la zone partagee                  */
     if( argc != NB_ARGS)
     {
         usage(argv[0]);
         return( 0 );
     };
-    /*............................*/
+    
     /* recuperation des arguments */
-    /*............................*/
-    if( sscanf(argv[1],"%lf",&u) == 0 )
+    
+    if( sscanf(argv[1],"%c",&cDriveID) == 0 )
     {
-        fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre reel\n", argv[0]);
-        usage(argv[0]);
-        return( 0 );
-    };
-    if( sscanf(argv[2],"%c",&cDriveID) == 0 )
-    {
-        fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #2 doit etre un caractere\n", argv[0]);
+        fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre un caractere\n", argv[0]);
         usage(argv[0]);
         return( 0 );
     };
     /*................................................*/
     /* lien / creation aux zones de memoire partagees */
     /*................................................*/
-    sprintf(szCmdAreaName,"%s%c", CMD_BASENAME, cDriveID);
+    sprintf(szStateAreaName,"%s%c", STATE_BASENAME, cDriveID);
     /* zone de commande */
-    if(( iFdCmd = shm_open(szCmdAreaName, O_RDWR, 0600)) < 0 )
+    if(( iFdState = shm_open(szStateAreaName, O_RDWR, 0600)) < 0 )
     {
         fprintf(stderr,"%s.main() :  ERREUR ---> appel a shm_open() \n", argv[0]);
         fprintf(stderr,"             code = %d (%s)\n", errno, (char *)(strerror(errno)));
@@ -83,23 +65,23 @@ int main( int argc, char *argv[])
     }
     else
     {
-        printf("LIEN a la zone %s\n", szCmdAreaName);
+        printf("LIEN a la zone %s\n", szStateAreaName);
     };
-    if( ftruncate(iFdCmd, sizeof(double)) < 0 )
+    if( ftruncate(iFdState, 2 * sizeof(double)) < 0 )
     {
         fprintf(stderr,"%s.main() :  ERREUR ---> appel a ftruncate() #1\n", argv[0]);
         fprintf(stderr,"             code = %d (%s)\n", errno, (char *)(strerror(errno)));
         exit( -errno );
     };
-    if((lpdb_u = (double *)(mmap(NULL, sizeof(double), PROT_READ | PROT_WRITE, MAP_SHARED, iFdCmd, 0))) == MAP_FAILED )
+    if((lpdb_state = (double *)(mmap(NULL, 2 * sizeof(double), PROT_READ | PROT_WRITE, MAP_SHARED, iFdState, 0))) == MAP_FAILED )
     {
         fprintf(stderr,"%s.main() :  ERREUR ---> appel a mmap() #1\n", argv[0]);
         fprintf(stderr,"             code = %d (%s)\n", errno, (char *)(strerror(errno)));
         exit( -errno );
     };
-    /*************************/
+
     /* fonctionnement normal */
-    /*************************/
-    *lpdb_u = u;
+    
+    memset(lpdb_state,0, 2 * sizeof(double));
     return( 0 );   
 }
