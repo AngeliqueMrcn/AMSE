@@ -21,7 +21,7 @@ int main( int argc, char *argv[]){
     double err_rotation;
     double *pos_rot;
     double rot;
-    rot = pos_rot;
+    rot = *pos_rot;
 
     /*............................*/
     /* recuperation des arguments */

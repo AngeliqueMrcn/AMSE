@@ -1,9 +1,4 @@
-/*===================================*/
-/* utilitaire pour imposer la valeur */
-/* de la consigne a un moteur        */
-/* ----------------------------------*/
-/* J.BOONAERT AMSE 2021-2022         */
-/*===================================*/
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>

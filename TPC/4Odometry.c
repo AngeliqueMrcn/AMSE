@@ -1,10 +1,4 @@
-/*=======================================*/
-/* Application du modele odometrique     */
-/* du robot pour determiner sa position  */
-/* et son orientation                    */
-/* --------------------------------------*/
-/* J.BOONAERT AMSE 2021-2022             */
-/*=======================================*/
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>

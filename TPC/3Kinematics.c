@@ -1,10 +1,4 @@
-/*=======================================*/
-/* Application du modele cinematique     */
-/* du robot pour determiner ses vitesses */
-/* lineaire et angulaires                */
-/* --------------------------------------*/
-/* J.BOONAERT AMSE 2021-2022             */
-/*=======================================*/
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
