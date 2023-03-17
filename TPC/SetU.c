@@ -1,4 +1,9 @@
-
+/*===================================*/
+/* utilitaire pour imposer la valeur */
+/* de la commande a un moteur        */
+/* ----------------------------------*/
+/* J.BOONAERT AMSE 2021-2022         */
+/*===================================*/
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,9 +15,9 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-
+/*............*/
 /* constantes */
-
+/*............*/
 #define CMD_BASENAME    "COMMAND_"
 #define NB_ARGS         3               /* ->nombre d'arguments a passer en ligne de commande                            */
 #define STR_LEN         64              /* ->taille des chaines par defaut                                               */
@@ -27,7 +32,9 @@ void usage( char *);        /* ->aide de ce programme              */
 /*-------------*/
 /* definitions */
 /*-------------*/
-
+/*&&&&&&&&&&&&&&&&&&&&&&*/
+/* aide de ce programme */
+/*&&&&&&&&&&&&&&&&&&&&&&*/
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)

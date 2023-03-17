@@ -1,4 +1,8 @@
-
+/*===============================*/
+/* exemple de programme DC MOTOR */
+/* ------------------------------*/
+/* J.BOONAERT AMSE 2021-2022     */
+/*===============================*/
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +27,6 @@
 /*----------*/
 /* globales */
 /*----------*/
-
 int     GoOn = 1;       /* ->controle d'execution du processus */
 double  a11,            /* ->coeff du modele d'etat du moteur  */
         a12,            /* ->coeff du modele d'etat du moteur  */
@@ -33,20 +36,21 @@ double  a11,            /* ->coeff du modele d'etat du moteur  */
 double *lpdb_u;         /* ->pointeur sur la commande          */
 double *lpdb_w;         /* ->pointeur sur la vitesse angulaire */
 double *lpdb_i;         /* ->pointeur sur le courant           */
-
 /*--------------*/
 /* declarations */
 /*--------------*/
-
 void usage( char *);        /* ->aide de ce programme              */
 void initModel( double, double, double, double, double, double, double);
                             /* ->initialisation des coeffs. du     */
                             /*   modele d'etat.                    */
 void updateState(void);     /* ->mise a jour de l'etat du moteur   */
 void SignalHandler(int);    /* ->gestionnaire de signale           */
-
-
-
+/*-------------*/
+/* definitions */
+/*-------------*/
+/*&&&&&&&&&&&&&&&&&&&&&&*/
+/* aide de ce programme */
+/*&&&&&&&&&&&&&&&&&&&&&&*/
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)
@@ -134,8 +138,8 @@ int main( int argc, char *argv[])
     double  f;                              /* ->coefficient de frottement                      */
     double  j;                              /* ->inertie totale au rotor                        */
     double  Te;                             /* ->periode d'echantillonnage                      */
-    struct sigaction    sa ;                 /* ->gestion du signal handler                      */
-    struct sigaction    sa_old ;             /* ->gestion du signal handler                      */
+    struct sigaction    sa;                 /* ->gestion du signal handler                      */
+    struct sigaction    sa_old;             /* ->gestion du signal handler                      */
     sigset_t            mask;               /* ->liste des signaux a masquer                    */
     struct itimerval    sTime;              /* ->periode du timer                               */
     /*.......*/
@@ -146,9 +150,9 @@ int main( int argc, char *argv[])
         usage(argv[0]);
         return( 0 );
     };
-
-
-
+    /*............................*/
+    /* recuperation des arguments */
+    /*............................*/
     if( sscanf(argv[1],"%lf",&r) == 0 )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre reel\n", argv[0]);
@@ -268,11 +272,9 @@ int main( int argc, char *argv[])
     };
     lpdb_w = &lpdb_state[OFFSET_W];
     lpdb_i = &lpdb_state[OFFSET_I];
-    
     /*............................................*/
     /* installation de la routine d'interception  */
     /*............................................*/
-    
     memset(&sa,0,sizeof(struct sigaction));
     sigemptyset( &mask );
     sa.sa_mask = mask;
@@ -284,11 +286,9 @@ int main( int argc, char *argv[])
         fprintf(stderr,"             code = %d (%s)\n", errno, (char *)(strerror(errno)));
         exit( -errno );
     };
-    
     /*........................*/
     /* configuration du timer */
     /*........................*/
-    
     sTime.it_interval.tv_sec = (int)(Te);
     sTime.it_interval.tv_usec = (int)((Te - (int)(Te))*1e6);
     
@@ -307,11 +307,15 @@ int main( int argc, char *argv[])
     while( GoOn)
     {
         pause();
+        /*_________________________________________________________________*/
+#if defined(USR_DBG)
         if( (iLoops % (int)(REFRESH_RATE)) == 0)
         {
             printf("u = %lf w = %lf i = %lf\n", *lpdb_u, *lpdb_w, *lpdb_i);
         };
         iLoops++;
+        /*_________________________________________________________________*/
+#endif
     }
     return( 0 );   
 }

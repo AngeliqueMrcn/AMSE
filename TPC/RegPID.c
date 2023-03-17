@@ -1,4 +1,8 @@
-
+/*===============================*/
+/* regulation PID d'un moteur CC */
+/* ------------------------------*/
+/* J.BOONAERT AMSE 2021-2022     */
+/*===============================*/
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,22 +19,22 @@
 /*............*/
 #define CMD_BASENAME        "COMMAND_"
 #define STATE_BASENAME      "STATE_"
-#define TARGET_BASENAME     "TARGET_" // en plus !
-#define NB_ARGS         9               /* ->6nombre d'arguments a passer en ligne de commande                            */
-#define REFRESH_RATE    50               /* ->5nombre d'iterations a realiser pour 1 affichage de l'etat et de la commande */
+#define TARGET_BASENAME     "TARGET_"
+#define NB_ARGS         6               /* ->nombre d'arguments a passer en ligne de commande                            */
+#define REFRESH_RATE    5               /* ->nombre d'iterations a realiser pour 1 affichage de l'etat et de la commande */
 #define OFFSET_W        0               /* ->offset sur la zone d'etat pour acceder a la vitesse angulaire               */
 #define OFFSET_I        1               /* ->offset sur la zone d'etat pour acceder a l'intensite                        */
 #define STR_LEN         64              /* ->taille des chaines par defaut                                               */
 /*----------*/
 /* globales */
 /*----------*/
-int     GoOn = 1;           /* ->/controle d'execution du processus            */
+int     GoOn = 1;           /* ->controle d'execution du processus            */
 int     iCount = 0;         /* ->comptage du nombre d'iterations              */
-double  *lpdb_u;            /* ->/pointeur sur la commande                     */
-double  *lpdb_w;            /* ->/pointeur sur la vitesse angulaire            */
+double  *lpdb_u;            /* ->pointeur sur la commande                     */
+double  *lpdb_w;            /* ->pointeur sur la vitesse angulaire            */
 double  *lpdb_Tv;           /* ->pointeur sur la consigne de vitesse          */
-double  *lpdb_i;            /* ->/pointeur sur le courant                      */
-double  Te;                 /* ->periode d'échantillonnage                    */
+double  *lpdb_i;            /* ->pointeur sur le courant                      */
+double  Te;                 /* ->periode d'echantillonnage                    */
 double  e;                  /* ->erreur courante                              */
 double  e_prev;             /* ->erreur passee                                */
 double  De;                 /* ->derivee de l'erreur                          */
@@ -44,12 +48,16 @@ double  Dcoeff;             /* ->action derivee                               */
 /*--------------*/
 void usage( char *);        /* ->aide de ce programme                         */
 void *Link2SharedMem( char *, int, int *, int);
-                            /* ->+creation ou lien a une zone de memoire       */
+                            /* ->creation ou lien a une zone de memoire       */
                             /*   partagee                                     */
 void updateCommand(void);   /* ->mise a jour de la commande du moteur         */
-void SignalHandler(int);    /* ->gestionnaire de signal                      */
-
-
+void SignalHandler(int);    /* ->gestionnaire de signale                      */
+/*-------------*/
+/* definitions */
+/*-------------*/
+/*&&&&&&&&&&&&&&&&&&&&&&*/
+/* aide de ce programme */
+/*&&&&&&&&&&&&&&&&&&&&&&*/
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)
@@ -59,10 +67,10 @@ void usage( char *szPgmName)
     printf("%s <P> <I> <D> <Periode d'ech.> <drive>\n", szPgmName);
     printf("   avec <drive> = L | R \n");
 }
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* creation ou lien a une zone de memoire */
 /* partagee.                              */
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee        */
                         int iSize,                  /* ->taille de la zone (en octets)  */
                         int *iFd,                   /* ->descripteur associe a la zone  */
@@ -82,11 +90,9 @@ void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee
         fprintf(stderr,"Link2SharedMem() : ERREUR ---> pointeur NULL passe en argument #3\n");
         return( NULL );
     };
-    
-    /*................................................*/
-    /* lien / creation aux zones de memoire partagees */
-    /*................................................*/
-    
+    /*..................................................*/
+    /* lien a / creation de la zone de memoire partagee */
+    /*..................................................*/
     if(( *iFd = shm_open(szAreaName, O_RDWR, 0600)) < 0 )
     {
         if( iCreate > 0 )
@@ -122,10 +128,9 @@ void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee
     /* fini */
     return( vAddr );
 }
-
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* mise a jour de la commande du moteur */
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 void updateCommand( void )
 {
     double u;       /* ->valeur courante de la commande          */
@@ -157,10 +162,9 @@ void updateCommand( void )
     e_prev  = e;
     *lpdb_u = u;
 }
-
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* gestionnaire de signal */
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&*/
 void SignalHandler( int signal )
 {
     if( signal == SIGALRM)
@@ -192,18 +196,17 @@ int main( int argc, char *argv[])
     struct sigaction    sa_old;             /* ->gestion du signal handler                      */
     sigset_t            mask;               /* ->liste des signaux a masquer                    */
     struct itimerval    sTime;              /* ->periode du timer                               */
-    
+    /*.......*/
     /* check */
-    
+    /*.......*/
     if( argc != NB_ARGS)
     {
         usage(argv[0]);
         return( 0 );
     };
-
-
+    /*............................*/
     /* recuperation des arguments */
-
+    /*............................*/
     if( sscanf(argv[1],"%lf",&Kcoeff) == 0 )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre reel\n", argv[0]);

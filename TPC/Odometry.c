@@ -1,4 +1,10 @@
-
+/*=======================================*/
+/* Application du modele odometrique     */
+/* du robot pour determiner sa position  */
+/* et son orientation                    */
+/* --------------------------------------*/
+/* J.BOONAERT AMSE 2021-2022             */
+/*=======================================*/
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,12 +19,10 @@
 /*............*/
 /* constantes */
 /*............*/
-
 #define OFFSET_W        0               /* ->indice pour acceder a la vitesse angulaire d'un rotor                       */
-#define STATE_L             "STATE_L"   /* ->etat du moteur gauche                                                       */
-#define STATE_R             "STATE_R"   /* ->etat du moteur droit                                                        */
 #define VELOCITY            "VELOCITY"  /* ->nom de la zone partagee pour les vitesses lineaire et angulaire             */
-#define NB_ARGS         4               /* ->nombre d'arguments a passer en ligne de commande                            */
+#define POSITION            "POSITION"  /* ->nom de la zone partagee pour la position du robot                           */
+#define NB_ARGS         1               /* ->nombre d'arguments a passer en ligne de commande                            */
 #define REFRESH_RATE    5               /* ->nombre d'iterations a realiser pour 1 affichage de l'etat et de la commande */
 #define OFFSET_VC       0               /* ->offset sur la zone d'etat pour acceder a la vitesse angulaire               */
 #define OFFSET_WC       1               /* ->offset sur la zone d'etat pour acceder a l'intensite                        */
@@ -27,42 +31,39 @@
 /* globales */
 /*----------*/
 int     GoOn = 1;           /* ->controle d'execution du processus             */
-int     iCount = 0;         /* ->comptage du nombre d'iterations               */
-double  *lpdb_wL;           /* ->pointeur sur la vitesse angulaire roue gauche */    
-double  *lpdb_wR;           /* ->pointeur sur la vitesse angulaire roue droite */
-double  *lpdb_vel;          /* ->pointeur sur la zone partagee des vitesses    */
+int     iCount = 0;         /* ->comptage du nombre d'iterations               */   
+double  *lpdb_pos;          /* ->pointeur sur la zone partagee de la position  */
+double  *lpdb_Xc;           /* ->pointeur sur la position en x                 */
+double  *lpdb_Yc;           /* ->pointeur sur la position en y                 */
+double  *lpdb_Qc;           /* ->pointeur sur l'orientation                    */
 double  Te;                 /* ->periode d'echantillonnage                     */
-double  R0;                 /* ->rayon commun des roues du robot               */
-double  w;                  /* ->entraxe des roues                             */
 /*--------------*/
 /* declarations */
 /*--------------*/
-
-
-void usage( char *);        /* ->aide de ce programme                            */
+//void usage( char *);        /* ->aide de ce programme                            */
 void *Link2SharedMem( char *, int, int *, int);
                             /* ->creation ou lien a une zone de memoire          */
                             /*   partagee                                        */
-void updateVelocity(void);  /* ->mise a jour des vitesses lineaires et angulaire */
+void updatePosition(void);  /* ->mise a jour des vitesses lineaires et angulaire */
 void SignalHandler(int);    /* ->gestionnaire de signale                         */
-
-
-
+/*-------------*/
+/* definitions */
+/*-------------*/
+/*&&&&&&&&&&&&&&&&&&&&&&*/
+/* aide de ce programme */
+/*&&&&&&&&&&&&&&&&&&&&&&*/
 void usage( char *szPgmName)
 {
     if( szPgmName == NULL)
     {
         exit( -1 );
     };
-    printf("%s <R0> <W> <Periode d'ech.> <drive>\n", szPgmName);
-    printf("   avec <drive> = L | R \n");
+    printf("%s <Periode d'ech.>\n", szPgmName);
 }
-
-
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* creation ou lien a une zone de memoire */
 /* partagee.                              */
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee        */
                         int iSize,                  /* ->taille de la zone (en octets)  */
                         int *iFd,                   /* ->descripteur associe a la zone  */
@@ -82,9 +83,9 @@ void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee
         fprintf(stderr,"Link2SharedMem() : ERREUR ---> pointeur NULL passe en argument #3\n");
         return( NULL );
     };
-   
+    /*..................................................*/
     /* lien a / creation de la zone de memoire partagee */
-    
+    /*..................................................*/
     if(( *iFd = shm_open(szAreaName, O_RDWR, 0600)) < 0 )
     {
         if( iCreate > 0 )
@@ -120,21 +121,24 @@ void *Link2SharedMem(   char *szAreaName,           /* ->nom de la zone partagee
     /* fini */
     return( vAddr );
 }
-
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* mise a jour des vitesses au centre cinematique */
-
-void updateVelocity( void )
+/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
+void updatePosition( void )
 {
-    double wL;      /* ->valeur courante de la vitesse angulaire roue gauche */
-    double wR;      /* ->valeur courante de la vitesse angulaire roue droite */
     double Vc;      /* ->vitesse lineaire au centre cinematique              */
     double Wc;      /* ->vitesse angulaire au centre cinematique             */
+    double Xc;      /* ->Position du robot selon l'abcisse x                 */
+    double Yc;      /* ->Position du robot selon l'abcisse y                 */
+    double Qc;      /* ->Angle designant l'orientation du robot              */
     /* photo.. */
-    wL  = *lpdb_wL;
-    wR  = *lpdb_wR;
+    Xc  = *lpdb_Xc;
+    Yc  = *lpdb_Yc;
+    Qc  = *lpdb_Qc;
     /* calcul */
-    Vc = 0.5 * R0 * (wL + wR);
-    Wc = (R0/w) * (wR - wL);
+    Xc = Xc - Vc*Te*sin(Qc);
+    Yc = Yc + Vc*Te*cos(Qc);
+    Qc = Qc + Te*Wc;
     /*_________________________________________________________________*/
 #if defined(USR_DBG)
     if( (iCount % REFRESH_RATE) == 0 )
@@ -145,8 +149,9 @@ void updateVelocity( void )
 #endif
     /*_________________________________________________________________*/
     /* mise a jour */
-    lpdb_vel[OFFSET_VC] = Vc;
-    lpdb_vel[OFFSET_WC] = Wc;
+    lpdb_pos[0] = Xc;
+    lpdb_pos[1] = Yc;
+    lpdb_pos[2] = Qc;
 }
 /*&&&&&&&&&&&&&&&&&&&&&&&&*/
 /* gestionnaire de signal */
@@ -155,20 +160,19 @@ void SignalHandler( int signal )
 {
     if( signal == SIGALRM)
     {
-        updateVelocity();
+        updatePosition();
     };
 }
-
+/*######*/
 /* MAIN */
-
+/*######*/
 int main( int argc, char *argv[])
 {
-    int     iFdStateL;                      /* ->descripteur pour la zone d'etat moteur gauche                */
-    int     iFdStateR;                      /* ->descripteur pour la zone d'etat moteur droit                 */
+    int     iFdPosition;                    /* ->descripteur pour la zone d'etat moteur droit                 */
     int     iFdVelocity;                    /* ->descripteur pour la zone des vitesses                        */
     int     iLoops = 0;                     /* ->compte le nombre d'iterations effectuees                     */
-    double  *lpdb_stateL;                   /* ->pointeur sur la zone partagee contenant l'etat moteur gauche */
-    double  *lpdb_stateR;                   /* ->pointeur sur la zone partagee contenant l'etat moteur droit  */
+    double  *lpdb_vel;                      /* ->pointeur sur la zone partagee contenant la vitesse           */
+    double  *lpdb_pos;                      /* ->pointeur sur la zone partagee contenant la position          */
     struct sigaction    sa;                 /* ->gestion du signal handler                                    */
     struct sigaction    sa_old;             /* ->gestion du signal handler                                    */
     sigset_t            mask;               /* ->liste des signaux a masquer                                  */
@@ -184,45 +188,28 @@ int main( int argc, char *argv[])
     /*............................*/
     /* recuperation des arguments */
     /*............................*/
-    if( sscanf(argv[1],"%lf",&R0) == 0 )
-    {
-        fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #1 doit etre reel\n", argv[0]);
-        usage(argv[0]);
-        return( 0 );
-    };
-    if( sscanf(argv[2],"%lf",&w) == 0 )
-    {
-        fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #2 doit etre reel\n", argv[0]);
-        usage(argv[0]);
-        return( 0 );
-    };
     if( sscanf(argv[3],"%lf",&Te) == 0 )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> l'argument #3 doit etre reel\n", argv[0]);
         usage(argv[0]);
         return( 0 );
     };
-    
-    
+    /*................................................*/
     /* lien / creation aux zones de memoire partagees */
-    
-    if( (lpdb_stateL = (double *)(Link2SharedMem(STATE_L, 2 * sizeof(double), &iFdStateL, 1 ))) == NULL )
+    /*................................................*/
+    if( (lpdb_vel = (double *)(Link2SharedMem(VELOCITY, 2 * sizeof(double), &iFdVelocity, 1 ))) == NULL )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> appel a Link2SharedMem() #1\n", argv[0]);
         return( 0 );
     };
-    if( (lpdb_stateR = (double *)(Link2SharedMem(STATE_R, 2 * sizeof(double), &iFdStateR, 1 ))) == NULL )
+    if( (lpdb_pos = (double *)(Link2SharedMem(POSITION, 3 * sizeof(double), &iFdPosition, 1 ))) == NULL )
     {
         fprintf(stderr,"%s.main()  : ERREUR ---> appel a Link2SharedMem() #2\n", argv[0]);
         return( 0 );
     };
-    if( (lpdb_vel = (double *)(Link2SharedMem(VELOCITY, 2 * sizeof(double), &iFdVelocity, 1 ))) == NULL )
-    {
-        fprintf(stderr,"%s.main()  : ERREUR ---> appel a Link2SharedMem() #3\n", argv[0]);
-        return( 0 );
-    };
-    lpdb_wL  = &lpdb_stateL[OFFSET_W];
-    lpdb_wR  = &lpdb_stateR[OFFSET_W];
+    
+    lpdb_vel  = &lpdb_vel[OFFSET_W];
+    lpdb_pos  = &lpdb_pos[OFFSET_W];
     /*.................*/
     /* initialisations */
     /*.................*/
@@ -265,7 +252,7 @@ int main( int argc, char *argv[])
 #if defined(USR_DBG)
         if( (iLoops % (int)(REFRESH_RATE)) == 0)
         {
-            printf("Vc = %lf Wc = %lf \n", lpdb_vel[0], lpdb_vel[1]);
+            printf("Pos_x = %lf Pos_y = %lf Orientation_ang = %lf\n", lpdb_pos[0], lpdb_pos[1], lpdb[2]);
         };
         iLoops++;
 #endif
