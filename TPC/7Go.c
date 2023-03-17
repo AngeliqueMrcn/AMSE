@@ -30,8 +30,8 @@ int main( int argc, char *argv[]){
     double consigne;  //consigne de position du robot
     double err_consigne;
     c = count;
-    x = pos_x;
-    y = pos_y;
+    x = *pos_x;
+    y = *pos_y;
 
     /*............................*/
     /* recuperation des arguments */
@@ -66,8 +66,9 @@ int main( int argc, char *argv[]){
     /******************/
     if(c == 0){
         initx = 0;
-        inity = 0
+        inity = 0;
     }
+
     /* mise a zero de la vitesse */
     if( sqrt((x-initx)*(x-initx) + (y-inity)*(y-inity)) < consigne + err_consigne && sqrt((x-initx)*(x-initx) + (y-inity)*(y-inity)) > consigne - err_consigne){
         lpdb_stateR[0] = 0;
@@ -91,4 +92,5 @@ int main( int argc, char *argv[]){
         c = 1;
     }
     return (0);
+
 }
